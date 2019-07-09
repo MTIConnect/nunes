@@ -42,11 +42,14 @@ module Nunes
   NAMESPACE_SEPARATOR = "::".freeze
 
   # Private: What nunes uses to separate namespaces in the metric.
-  METRIC_NAMESPACE_SEPARATOR = "-".freeze
+  METRIC_NAMESPACE_SEPARATOR = "_".freeze
 
   # Private: Converts a class to a metric safe name.
   def self.class_to_metric(class_or_class_name)
     return if class_or_class_name.nil?
-    class_or_class_name.to_s.gsub(NAMESPACE_SEPARATOR, METRIC_NAMESPACE_SEPARATOR)
+    class_or_class_name.
+      to_s.
+      gsub(NAMESPACE_SEPARATOR, METRIC_NAMESPACE_SEPARATOR).
+      underscore
   end
 end

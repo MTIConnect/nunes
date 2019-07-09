@@ -12,10 +12,10 @@ module Nunes
       end
 
       def instrument_method_time(start, ending, transaction_id, payload)
-        runtime = ((ending - start) * 1_000).round
+        runtime = (ending - start) * 1_000
         metric = payload[:metric]
 
-        timing "#{metric}", runtime if metric
+        timing metric, runtime if metric
       end
     end
   end
