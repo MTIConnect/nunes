@@ -20,13 +20,13 @@ class ViewInstrumentationTest < ActionController::TestCase
     get :index
 
     assert_response :success
-    assert_timer 'action_view.template.app_views_posts_index_html_erb'
+    assert_timer 'action_view.render.duration.milliseconds', tags: { kind: 'template', path: 'app_views_posts_index_html_erb' }
   end
 
   test 'render_partial' do
     get :index
 
     assert_response :success
-    assert_timer 'action_view.partial.app_views_posts_post_html_erb'
+    assert_timer 'action_view.render.duration.milliseconds', tags: { kind: 'partial', path: 'app_views_posts_post_html_erb' }
   end
 end

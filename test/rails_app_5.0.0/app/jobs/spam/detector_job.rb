@@ -2,7 +2,7 @@
 
 module Spam
   class DetectorJob < ApplicationJob
-    queue_as :default
+    queue_as :high
 
     def perform(*posts)
       posts.detect do |post|

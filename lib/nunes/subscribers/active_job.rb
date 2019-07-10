@@ -16,13 +16,16 @@ module Nunes
       def perform(start, ending, _transaction_id, payload)
         runtime = (ending - start) * 1_000
         job = ::Nunes.class_to_metric(payload[:job].class)
+        queue = payload[:job].queue_name
 
-        timing 'active_job.perform.duration.milliseconds', runtime, tags: { job: job }
+        timing 'active_job.perform.duration.milliseconds', runtime, tags: { job: job, queue: queue }
       end
 
       def enqueue(_start, _ending, _transaction_id, payload)
         job = ::Nunes.class_to_metric(payload[:job].class)
-        increment 'active_job.enqueue.total', tags: { job: job }
+        queue = payload[:job].queue_name
+
+        increment 'active_job.enqueue.total', tags: { job: job, queue: queue }
       end
     end
   end

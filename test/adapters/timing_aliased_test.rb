@@ -6,22 +6,20 @@ require 'minitest/mock'
 class TimingAliasedAdapterTest < ActiveSupport::TestCase
   test 'passes increment along' do
     mock = MiniTest::Mock.new
-    mock.expect :increment, nil, ['single', 1]
-    mock.expect :increment, nil, ['double', 2]
+    mock.expect :increment, nil, ['single', tags: { food: 'bar' }]
 
     client = Nunes::Adapters::TimingAliased.new(mock)
-    client.increment('single')
-    client.increment('double', 2)
+    client.increment('single', tags: { food: 'bar' })
 
     mock.verify
   end
 
   test 'sends timing to gauge' do
     mock = MiniTest::Mock.new
-    mock.expect :gauge, nil, ['foo', 23]
+    mock.expect :gauge, nil, ['foo', 23, tags: { foo: 'bar' }]
 
     client = Nunes::Adapters::TimingAliased.new(mock)
-    client.timing('foo', 23)
+    client.timing('foo', 23, tags: { foo: 'bar' })
 
     mock.verify
   end

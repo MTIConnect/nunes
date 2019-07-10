@@ -20,7 +20,12 @@ class JobInstrumentationTest < ActiveSupport::TestCase
     post = Post.new(title: 'Testing')
     SpamDetectorJob.perform_now(post)
 
-    assert_timer 'active_job.SpamDetectorJob.perform'
+    expected_tags = {
+      job: 'spam_detector_job',
+      queue: 'default'
+    }
+
+    assert_timer 'active_job.perform.duration.milliseconds', tags: expected_tags
   end
 
   test 'perform_later' do
@@ -29,7 +34,12 @@ class JobInstrumentationTest < ActiveSupport::TestCase
       SpamDetectorJob.perform_later(post)
     end
 
-    assert_counter 'active_job.SpamDetectorJob.enqueue'
-    assert_timer   'active_job.SpamDetectorJob.perform'
+    expected_tags = {
+      job: 'spam_detector_job',
+      queue: 'default'
+    }
+
+    assert_counter 'active_job.enqueue.total', tags: expected_tags
+    assert_timer   'active_job.perform.duration.milliseconds', tags: expected_tags
   end
 end

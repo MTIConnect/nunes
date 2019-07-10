@@ -21,21 +21,17 @@ class NamespacedControllerInstrumentationTest < ActionController::TestCase
 
     assert_response :success
 
-    assert_timer 'action_controller.controller.Admin-PostsController.index.runtime.total'
-    assert_timer 'action_controller.controller.Admin-PostsController.index.runtime.view'
-    assert_timer 'action_controller.controller.Admin-PostsController.index.runtime.db'
+    expected_tags = {
+      status: 200,
+      controller: 'admin_posts_controller',
+      action: 'index'
+    }
 
-    assert_counter 'action_controller.format.html'
-    assert_counter 'action_controller.status.200'
+    assert_counter 'action_controller.requests.total', tags: expected_tags
 
-    assert_counter 'action_controller.controller.Admin-PostsController.index.format.html'
-    assert_counter 'action_controller.controller.Admin-PostsController.index.status.200'
-  end
-
-  test 'process_action w/ json' do
-    get :index, format: :json
-
-    assert_counter 'action_controller.controller.Admin-PostsController.index.format.json'
+    assert_timer 'action_controller.request.duration.milliseconds', tags: expected_tags
+    assert_timer 'action_controller.db.duration.milliseconds', tags: expected_tags
+    assert_timer 'action_controller.render.duration.milliseconds', tags: expected_tags
   end
 
   test 'process_action bad_request' do
@@ -43,6 +39,15 @@ class NamespacedControllerInstrumentationTest < ActionController::TestCase
 
     assert_response :forbidden
 
-    assert_counter 'action_controller.controller.Admin-PostsController.new.status.403'
+    expected_tags = {
+      status: 403,
+      controller: 'admin_posts_controller',
+      action: 'new'
+    }
+
+    assert_counter 'action_controller.requests.total', tags: expected_tags
+
+    assert_timer 'action_controller.request.duration.milliseconds', tags: expected_tags
+    assert_timer 'action_controller.db.duration.milliseconds', tags: expected_tags
   end
 end

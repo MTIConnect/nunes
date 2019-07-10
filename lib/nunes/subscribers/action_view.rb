@@ -35,7 +35,7 @@ module Nunes
           runtime = (ending - start) * 1_000
           raw_view_path = identifier.to_s.gsub(::Rails.root.to_s, Nothing)
           view_path = adapter.prepare(raw_view_path, FileSeparatorReplacement)
-          timing 'action_view.render.duration.milliseconds', runtime, tags: { kind: kind, view_path: view_path }
+          timing 'action_view.render.duration.milliseconds', runtime, tags: { kind: kind.to_s, path: view_path }
         end
       end
     end

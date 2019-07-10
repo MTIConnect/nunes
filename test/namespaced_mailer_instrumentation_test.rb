@@ -20,18 +20,18 @@ class NamespacedMailerInstrumentationTest < ActionMailer::TestCase
 
   test 'deliver_now' do
     Admin::PostMailer.created.deliver_now
-    assert_timer 'action_mailer.deliver.Admin-PostMailer'
+    assert_timer 'action_mailer.deliver.duration.milliseconds', tags: { mailer: 'admin_post_mailer' }
   end
 
   test 'deliver_later' do
     perform_enqueued_jobs do
       Admin::PostMailer.created.deliver_later
     end
-    assert_timer 'action_mailer.deliver.Admin-PostMailer'
+    assert_timer 'action_mailer.deliver.duration.milliseconds', tags: { mailer: 'admin_post_mailer' }
   end
 
   test 'receive' do
     Admin::PostMailer.receive Admin::PostMailer.created
-    assert_timer 'action_mailer.receive.Admin-PostMailer'
+    assert_timer 'action_mailer.receive.duration.milliseconds', tags: { mailer: 'admin_post_mailer' }
   end
 end

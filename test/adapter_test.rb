@@ -54,22 +54,20 @@ class AdapterTest < ActiveSupport::TestCase
 
   test 'passes increment along' do
     mock = MiniTest::Mock.new
-    mock.expect :increment, nil, ['single', 1]
-    mock.expect :increment, nil, ['double', 2]
+    mock.expect :increment, nil, ['single', tags: { foo: 'bar' }]
 
     client = Nunes::Adapter.new(mock)
-    client.increment('single')
-    client.increment('double', 2)
+    client.increment('single', tags: { foo: 'bar' })
 
     mock.verify
   end
 
   test 'passes timing along' do
     mock = MiniTest::Mock.new
-    mock.expect :timing, nil, ['foo', 23]
+    mock.expect :timing, nil, ['foo', 23, { tags: { foo: 'bar' } }]
 
     client = Nunes::Adapter.new(mock)
-    client.timing('foo', 23)
+    client.timing('foo', 23, tags: { foo: 'bar' })
 
     mock.verify
   end
@@ -114,7 +112,7 @@ class AdapterTest < ActiveSupport::TestCase
   test 'prepare does not modify original metric object' do
     adapter = Nunes::Adapter.new(nil)
     original = 'app.views.posts'
-    result = adapter.prepare('original')
+    _ = adapter.prepare('original')
 
     assert_equal 'app.views.posts', original
   end

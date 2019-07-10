@@ -17,7 +17,7 @@ module Nunes
       end
 
       def increment(stat, opts = {})
-        counters << [prepare(stat), 1, opts]
+        counters << [prepare(stat), opts]
       end
 
       def timing(stat, msec, opts = {})
@@ -35,8 +35,11 @@ module Nunes
       end
 
       # Internal: Returns true/false if metric has been recorded as a timer.
-      def timer?(metric)
-        timers.detect { |op| op.first == metric }
+      def timer?(metric, opts = {})
+        timers.detect do |op|
+          op.first == metric &&
+            op.last == opts
+        end
       end
 
       # Internal: Returns Array of any recorded counters with values.
@@ -50,8 +53,11 @@ module Nunes
       end
 
       # Internal: Returns true/false if metric has been recorded as a counter.
-      def counter?(metric, opts = { sample_rate: 1, tags: {} })
-        counters.detect { |op| op.first == metric && op.last[:tags] == opts[:tags] }
+      def counter?(metric, opts = {})
+        counters.detect do |op|
+          op.first == metric &&
+            op.last == opts
+        end
       end
 
       # Internal: Empties the known counters and metrics.

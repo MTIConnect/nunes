@@ -21,15 +21,17 @@ class ControllerInstrumentationTest < ActionController::TestCase
 
     assert_response :success
 
-    assert_counter 'action_controller.status.200'
+    expected_tags = {
+      status: 200,
+      controller: 'posts_controller',
+      action: 'index'
+    }
 
-    assert_timer 'action_controller.runtime.total'
-    assert_timer 'action_controller.runtime.db'
-    assert_timer 'action_controller.runtime.view'
+    assert_counter 'action_controller.requests.total', tags: expected_tags
 
-    assert_timer 'action_controller.controller.PostsController.index.runtime.total'
-    assert_timer 'action_controller.controller.PostsController.index.runtime.view'
-    assert_timer 'action_controller.controller.PostsController.index.runtime.db'
+    assert_timer 'action_controller.request.duration.milliseconds', tags: expected_tags
+    assert_timer 'action_controller.db.duration.milliseconds', tags: expected_tags
+    assert_timer 'action_controller.render.duration.milliseconds', tags: expected_tags
   end
 
   test 'send_data' do
@@ -37,13 +39,16 @@ class ControllerInstrumentationTest < ActionController::TestCase
 
     assert_response :success
 
-    assert_counter 'action_controller.requests.total', tags: { status: 200 }
+    expected_tags = {
+      status: 200,
+      controller: 'posts_controller',
+      action: 'some_data'
+    }
 
-    assert_timer 'action_controller.runtime.total'
-    assert_timer 'action_controller.runtime.view'
+    assert_counter 'action_controller.requests.total', tags: expected_tags
 
-    assert_timer 'action_controller.controller.PostsController.some_data.runtime.total'
-    assert_timer 'action_controller.controller.PostsController.some_data.runtime.view'
+    assert_timer 'action_controller.request.duration.milliseconds', tags: expected_tags
+    assert_timer 'action_controller.render.duration.milliseconds', tags: expected_tags
   end
 
   test 'send_file' do
@@ -51,13 +56,17 @@ class ControllerInstrumentationTest < ActionController::TestCase
 
     assert_response :success
 
-    assert_counter 'action_controller.status.200'
+    expected_tags = {
+      status: 200,
+      controller: 'posts_controller',
+      action: 'some_file'
+    }
 
-    assert_timer 'action_controller.runtime.total'
-    assert_timer 'action_controller.controller.PostsController.some_file.runtime.total'
+    assert_counter 'action_controller.requests.total', tags: expected_tags
 
-    assert !adapter.timer?('action_controller.runtime.view')
-    assert !adapter.timer?('action_controller.controller.PostsController.some_file.runtime.view')
+    assert_timer 'action_controller.request.duration.milliseconds', tags: expected_tags
+
+    refute_timer 'action_controller.render.duration.millisconds'
   end
 
   test 'redirect_to' do
@@ -65,13 +74,17 @@ class ControllerInstrumentationTest < ActionController::TestCase
 
     assert_response :redirect
 
-    assert_counter 'action_controller.requests.total', tags: { status: 302, controller: 'PostsController', action: 'some_redirect' }
+    expected_tags = {
+      status: 302,
+      controller: 'posts_controller',
+      action: 'some_redirect'
+    }
 
-    assert_timer 'action_controller.runtime.total'
-    assert_timer 'action_controller.controller.PostsController.some_redirect.runtime.total'
+    assert_counter 'action_controller.requests.total', tags: expected_tags
 
-    refute_timer 'action_controller.runtime.view'
-    refute_timer 'action_controller.controller.PostsController.some_redirect.runtime.view'
+    assert_timer 'action_controller.request.duration.milliseconds', tags: expected_tags
+
+    refute_timer 'action_controller.render.duration.millisconds'
   end
 
   test 'action with exception' do
@@ -83,11 +96,17 @@ class ControllerInstrumentationTest < ActionController::TestCase
 
     assert_response :success
 
-    assert_timer 'action_controller.runtime.total'
-    assert_timer 'action_controller.controller.PostsController.some_boom.runtime.total'
+    expected_tags = {
+      status: 500,
+      controller: 'posts_controller',
+      action: 'some_boom'
+    }
 
-    refute_timer 'action_controller.runtime.view'
-    refute_timer 'action_controller.controller.PostsController.some_boom.runtime.view'
+    assert_counter 'action_controller.requests.total', tags: expected_tags
+
+    assert_timer 'action_controller.request.duration.milliseconds', tags: expected_tags
+
+    refute_timer 'action_controller.render.duration.millisconds'
   end
 
   test 'with instrument db runtime disabled' do
@@ -97,24 +116,22 @@ class ControllerInstrumentationTest < ActionController::TestCase
 
       get :index
 
-      refute_timer 'action_controller.runtime.db'
-      refute_timer 'action_controller.controller.PostsController.index.runtime.db'
+      refute_timer 'action_controller.db.duration.millisconds'
     ensure
       Nunes::Subscribers::ActionController.instrument_db_runtime = original_db_enabled
     end
   end
 
-  test 'with instrument view runtime disabled' do
+  test 'with instrument render runtime disabled' do
     begin
-      original_view_enabled = Nunes::Subscribers::ActionController.instrument_view_runtime
-      Nunes::Subscribers::ActionController.instrument_view_runtime = false
+      original_render_enabled = Nunes::Subscribers::ActionController.instrument_render_runtime
+      Nunes::Subscribers::ActionController.instrument_render_runtime = false
 
       get :index
 
-      refute_timer 'action_controller.runtime.view'
-      refute_timer 'action_controller.controller.PostsController.index.runtime.view'
+      refute_timer 'action_controller.render.duration.millisconds'
     ensure
-      Nunes::Subscribers::ActionController.instrument_view_runtime = original_view_enabled
+      Nunes::Subscribers::ActionController.instrument_render_runtime = original_render_enabled
     end
   end
 end

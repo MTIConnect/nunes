@@ -14,12 +14,12 @@ module Nunes
       end
 
       class << self
-        attr_accessor :instrument_view_runtime
+        attr_accessor :instrument_render_runtime
         attr_accessor :instrument_db_runtime
       end
 
-      # Public: Should we instrument the view runtime overall and per controller/action.
-      self.instrument_view_runtime = true
+      # Public: Should we instrument the render runtime overall and per controller/action.
+      self.instrument_render_runtime = true
 
       # Public: Should we instrument the db runtime overall and per controller/action.
       self.instrument_db_runtime = true
@@ -33,12 +33,17 @@ module Nunes
           action: payload[:action]
         }.compact
 
+        if tags[:status].nil? && payload[:exception].present?
+          exception_class_name = payload[:exception].first
+          tags[:status] = ActionDispatch::ExceptionWrapper.status_code_for_exception(exception_class_name)
+        end
+
         timing 'action_controller.request.duration.milliseconds', runtime, tags: tags
         increment 'action_controller.requests.total', tags: tags if tags[:status]
 
-        if self.class.instrument_view_runtime && payload[:view_runtime]
-          view_runtime = payload[:view_runtime].round
-          timing 'action_controller.render.duration.milliseconds', view_runtime, tags: tags
+        if self.class.instrument_render_runtime && payload[:view_runtime]
+          render_runtime = payload[:view_runtime].round
+          timing 'action_controller.render.duration.milliseconds', render_runtime, tags: tags
         end
 
         if self.class.instrument_db_runtime && payload[:db_runtime]

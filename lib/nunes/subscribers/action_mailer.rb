@@ -18,7 +18,7 @@ module Nunes
         mailer = ::Nunes.class_to_metric(payload[:mailer])
 
         if mailer
-          timing 'action_mailer.deliver', runtime, tags: { mailer: mailer }
+          timing 'action_mailer.deliver.duration.milliseconds', runtime, tags: { mailer: mailer }
         end
       end
 
@@ -27,7 +27,7 @@ module Nunes
         mailer = ::Nunes.class_to_metric(payload[:mailer])
 
         if mailer
-          timing 'action_mailer.receive', runtime, tags: { mailer: mailer }
+          timing 'action_mailer.receive.duration.milliseconds', runtime, tags: { mailer: mailer }
         end
       end
     end

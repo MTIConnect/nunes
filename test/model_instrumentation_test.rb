@@ -17,15 +17,14 @@ class ModelInstrumentationTest < ActiveSupport::TestCase
   test 'transaction' do
     Post.create(title: 'Testing')
 
-    assert_timer 'active_record.sql.transaction_begin'
-    assert_timer 'active_record.sql.transaction_commit'
+    assert_timer 'active_record.sql.duration.milliseconds', tags: { operation: 'begin' }
+    assert_timer 'active_record.sql.duration.milliseconds', tags: { operation: 'commit' }
   end
 
   test 'create' do
     Post.create(title: 'Testing')
 
-    assert_timer 'active_record.sql'
-    assert_timer 'active_record.sql.insert'
+    assert_timer 'active_record.sql.duration.milliseconds', tags: { operation: 'insert' }
   end
 
   test 'update' do
@@ -33,8 +32,7 @@ class ModelInstrumentationTest < ActiveSupport::TestCase
     adapter.clear
     post.update_attributes(title: 'Title')
 
-    assert_timer 'active_record.sql'
-    assert_timer 'active_record.sql.update'
+    assert_timer 'active_record.sql.duration.milliseconds', tags: { operation: 'update' }
   end
 
   test 'find' do
@@ -42,8 +40,7 @@ class ModelInstrumentationTest < ActiveSupport::TestCase
     adapter.clear
     Post.find(post.id)
 
-    assert_timer 'active_record.sql'
-    assert_timer 'active_record.sql.select'
+    assert_timer 'active_record.sql.duration.milliseconds', tags: { operation: 'select' }
   end
 
   test 'destroy' do
@@ -51,7 +48,6 @@ class ModelInstrumentationTest < ActiveSupport::TestCase
     adapter.clear
     post.destroy
 
-    assert_timer 'active_record.sql'
-    assert_timer 'active_record.sql.delete'
+    assert_timer 'active_record.sql.duration.milliseconds', tags: { operation: 'delete' }
   end
 end

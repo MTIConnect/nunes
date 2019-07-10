@@ -23,8 +23,8 @@ module AdapterTestHelpers
     Post.delete_all
   end
 
-  def assert_timer(metric)
-    assert adapter.timer?(metric),
+  def assert_timer(metric, opts = {})
+    assert adapter.timer?(metric, opts),
            "Expected the timer #{metric.inspect} to be included in #{adapter.timer_metric_names.inspect}, but it was not."
   end
 
@@ -33,8 +33,8 @@ module AdapterTestHelpers
            "Expected the timer #{metric.inspect} to not be included in #{adapter.timer_metric_names.inspect}, but it was."
   end
 
-  def assert_counter(metric, _opts = { sample_rate: 1, tags: {} })
-    assert adapter.counter?(metric),
+  def assert_counter(metric, opts = {})
+    assert adapter.counter?(metric, opts),
            "Expected the counter #{metric.inspect} to be included in #{adapter.counter_metric_names.inspect}, but it was not."
   end
 

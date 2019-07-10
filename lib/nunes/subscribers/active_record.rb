@@ -18,18 +18,10 @@ module Nunes
 
       def sql(start, ending, _transaction_id, payload)
         runtime = (ending - start) * 1_000
-        name = payload[:name]
         sql = payload[:sql].to_s.strip
         operation = sql.split(Space, 2).first.to_s.downcase
 
-        case operation
-        when 'begin'
-          timing 'active_record.sql.transaction_begin.duration.milliseconds', runtime
-        when 'commit'
-          timing 'active_record.sql.transaction_commit.duration.milliseconds', runtime
-        else
-          timing 'active_record.sql.duration.milliseconds', runtime, tags: { operation: operation }
-        end
+        timing 'active_record.sql.duration.milliseconds', runtime, tags: { operation: operation }
       end
     end
   end
