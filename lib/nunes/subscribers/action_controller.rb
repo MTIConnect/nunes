@@ -27,7 +27,7 @@ module Nunes
       def process_action(start, ending, _transaction_id, payload)
         runtime = (ending - start) * 1_000
 
-        tags = {
+        tags = payload[:tags] || {
           status: payload[:status],
           controller: ::Nunes.class_to_metric(payload[:controller]),
           action: payload[:action]
