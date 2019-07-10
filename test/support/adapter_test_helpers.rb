@@ -24,8 +24,11 @@ module AdapterTestHelpers
   end
 
   def assert_timer(metric, opts = {})
-    assert adapter.timer?(metric, opts),
+    timers = adapter.timers.find_all { |timer| timer.first == metric }
+    assert timers.length.positive?
            "Expected the timer #{metric.inspect} to be included in #{adapter.timer_metric_names.inspect}, but it was not."
+    assert timers.find { |timer| timer.last == opts },
+           "Expected the options #{opts.inspect} to be included in #{timers.map(&:last)}"
   end
 
   def refute_timer(metric)
@@ -34,8 +37,11 @@ module AdapterTestHelpers
   end
 
   def assert_counter(metric, opts = {})
-    assert adapter.counter?(metric, opts),
+    counters = adapter.counters.find_all { |counter| counter.first == metric }
+    assert counters.length.positive?
            "Expected the counter #{metric.inspect} to be included in #{adapter.counter_metric_names.inspect}, but it was not."
+    assert counters.find { |counter| counter.last == opts },
+           "Expected the options #{opts.inspect} to be included in #{counters.map(&:last)}"
   end
 
   def refute_counter(metric)

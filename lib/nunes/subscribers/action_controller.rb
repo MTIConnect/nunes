@@ -27,11 +27,13 @@ module Nunes
       def process_action(start, ending, _transaction_id, payload)
         runtime = (ending - start) * 1_000
 
-        tags = payload[:tags] || {
+        tags = payload[:tags] || {}
+
+        tags.merge!(
           status: payload[:status],
           controller: ::Nunes.class_to_metric(payload[:controller]),
           action: payload[:action]
-        }.compact
+        ).compact!
 
         if tags[:status].nil? && payload[:exception].present?
           exception_class_name = payload[:exception].first

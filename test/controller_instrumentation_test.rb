@@ -24,7 +24,8 @@ class ControllerInstrumentationTest < ActionController::TestCase
     expected_tags = {
       status: 200,
       controller: 'posts_controller',
-      action: 'index'
+      action: 'index',
+      foo: 'bar'
     }
 
     assert_counter 'action_controller.requests.total', tags: expected_tags

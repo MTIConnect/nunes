@@ -22,6 +22,7 @@ class NamespacedControllerInstrumentationTest < ActionController::TestCase
     assert_response :success
 
     expected_tags = {
+      foo: 'bar',
       status: 200,
       controller: 'admin_posts_controller',
       action: 'index'
