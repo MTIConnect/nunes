@@ -70,7 +70,7 @@ class InstrumentationTest < ActiveSupport::TestCase
     event = slurp_events { thing_class.new.yo(some: 'thing') }.last
 
     assert_not_nil event, "No events were found."
-    assert_equal "Thing.yo", event.payload[:metric]
+    assert_equal "thing.yo", event.payload[:metric]
     assert event.duration > 0, "Expected #{event.duration} to be greater than 0"
 
     assert_timer "Thing.yo"
@@ -127,7 +127,7 @@ class InstrumentationTest < ActiveSupport::TestCase
     assert_not_nil event, "No events were found."
     assert_equal "loadin", event.payload[:pay]
 
-    assert_timer "Thing.yo"
+    assert_timer "thing.yo"
   end
 
   test "instrument_method_time for namespaced class" do
@@ -136,7 +136,7 @@ class InstrumentationTest < ActiveSupport::TestCase
     event = slurp_events { namespaced_thing_class.new.yo(some: 'thing') }.last
 
     assert_not_nil event, "No events were found."
-    assert_equal "Some-Thing.yo", event.payload[:metric]
+    assert_equal "some-Thing.yo", event.payload[:metric]
     assert event.duration > 0, "Expected #{event.duration} to be greater than 0"
 
     assert_timer "Some-Thing.yo"

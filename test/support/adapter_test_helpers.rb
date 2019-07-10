@@ -31,7 +31,7 @@ module AdapterTestHelpers
       "Expected the timer #{metric.inspect} to not be included in #{adapter.timer_metric_names.inspect}, but it was."
   end
 
-  def assert_counter(metric)
+  def assert_counter(metric, opts = { sample_rate: 1, tags: {}})
     assert adapter.counter?(metric),
       "Expected the counter #{metric.inspect} to be included in #{adapter.counter_metric_names.inspect}, but it was not."
   end
