@@ -1,4 +1,6 @@
-require "helper"
+# frozen_string_literal: true
+
+require 'helper'
 
 class NamespacedJobInstrumentationTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
@@ -14,20 +16,20 @@ class NamespacedJobInstrumentationTest < ActiveSupport::TestCase
     ActiveSupport::Notifications.unsubscribe @subscriber if @subscriber
   end
 
-  test "perform_now" do
+  test 'perform_now' do
     post = Post.new(title: 'Testing')
     Spam::DetectorJob.perform_now(post)
 
-    assert_timer   "active_job.Spam-DetectorJob.perform"
+    assert_timer 'active_job.Spam-DetectorJob.perform'
   end
 
-  test "perform_later" do
+  test 'perform_later' do
     post = Post.create!(title: 'Testing')
     perform_enqueued_jobs do
       Spam::DetectorJob.perform_later(post)
     end
 
-    assert_counter "active_job.Spam-DetectorJob.enqueue"
-    assert_timer   "active_job.Spam-DetectorJob.perform"
+    assert_counter 'active_job.Spam-DetectorJob.enqueue'
+    assert_timer   'active_job.Spam-DetectorJob.perform'
   end
 end

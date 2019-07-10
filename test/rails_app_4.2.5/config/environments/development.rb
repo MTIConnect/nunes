@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RailsApp::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -21,7 +23,6 @@ RailsApp::Application.configure do
 
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
-
 
   # Do not compress assets
   config.assets.compress = false

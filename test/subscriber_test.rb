@@ -1,5 +1,7 @@
-require "helper"
-require "minitest/mock"
+# frozen_string_literal: true
+
+require 'helper'
+require 'minitest/mock'
 
 class SubscriberTest < ActiveSupport::TestCase
   attr_reader :subscriber_class
@@ -12,20 +14,20 @@ class SubscriberTest < ActiveSupport::TestCase
         /\.test\Z/
       end
 
-      def foo(*args)
-        increment "test.foo"
+      def foo(*_args)
+        increment 'test.foo'
       end
 
       # minitest stub works with call, so i change it to just return self, since
       # all we really want to test in this instance is that things are wired
       # up right, not that call dispatches events correctly
-      def call(*args)
+      def call(*_args)
         self
       end
     end
   end
 
-  test "subscribe" do
+  test 'subscribe' do
     client = {}
     instance = subscriber_class.new(client)
 
@@ -35,13 +37,13 @@ class SubscriberTest < ActiveSupport::TestCase
       mock.expect :subscribe, :subscriber, [subscriber_class.pattern, instance]
 
       assert_equal :subscriber,
-        subscriber_class.subscribe(adapter, subscriber: mock)
+                   subscriber_class.subscribe(adapter, subscriber: mock)
 
       mock.verify
     end
   end
 
-  test "initialize" do
+  test 'initialize' do
     adapter = Object.new
     Nunes::Adapter.stub :wrap, adapter do
       instance = subscriber_class.new({})

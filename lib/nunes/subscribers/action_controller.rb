@@ -1,10 +1,12 @@
-require "nunes/subscriber"
+# frozen_string_literal: true
+
+require 'nunes/subscriber'
 
 module Nunes
   module Subscribers
     class ActionController < ::Nunes::Subscriber
       # Private
-      Pattern = /\.action_controller\Z/
+      Pattern = /\.action_controller\Z/.freeze
 
       # Private: The namespace for events to subscribe to.
       def self.pattern
@@ -22,7 +24,7 @@ module Nunes
       # Public: Should we instrument the db runtime overall and per controller/action.
       self.instrument_db_runtime = true
 
-      def process_action(start, ending, transaction_id, payload)
+      def process_action(start, ending, _transaction_id, payload)
         runtime = (ending - start) * 1_000
 
         tags = {

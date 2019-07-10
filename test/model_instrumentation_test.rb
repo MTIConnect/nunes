@@ -1,4 +1,6 @@
-require "helper"
+# frozen_string_literal: true
+
+require 'helper'
 
 class ModelInstrumentationTest < ActiveSupport::TestCase
   setup :setup_subscriber
@@ -12,44 +14,44 @@ class ModelInstrumentationTest < ActiveSupport::TestCase
     ActiveSupport::Notifications.unsubscribe @subscriber if @subscriber
   end
 
-  test "transaction" do
+  test 'transaction' do
     Post.create(title: 'Testing')
 
-    assert_timer "active_record.sql.transaction_begin"
-    assert_timer "active_record.sql.transaction_commit"
+    assert_timer 'active_record.sql.transaction_begin'
+    assert_timer 'active_record.sql.transaction_commit'
   end
 
-  test "create" do
+  test 'create' do
     Post.create(title: 'Testing')
 
-    assert_timer "active_record.sql"
-    assert_timer "active_record.sql.insert"
+    assert_timer 'active_record.sql'
+    assert_timer 'active_record.sql.insert'
   end
 
-  test "update" do
+  test 'update' do
     post = Post.create
     adapter.clear
-    post.update_attributes(title: "Title")
+    post.update_attributes(title: 'Title')
 
-    assert_timer "active_record.sql"
-    assert_timer "active_record.sql.update"
+    assert_timer 'active_record.sql'
+    assert_timer 'active_record.sql.update'
   end
 
-  test "find" do
+  test 'find' do
     post = Post.create
     adapter.clear
     Post.find(post.id)
 
-    assert_timer "active_record.sql"
-    assert_timer "active_record.sql.select"
+    assert_timer 'active_record.sql'
+    assert_timer 'active_record.sql.select'
   end
 
-  test "destroy" do
+  test 'destroy' do
     post = Post.create
     adapter.clear
     post.destroy
 
-    assert_timer "active_record.sql"
-    assert_timer "active_record.sql.delete"
+    assert_timer 'active_record.sql'
+    assert_timer 'active_record.sql.delete'
   end
 end

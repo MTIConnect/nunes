@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AdapterTestHelpers
   extend ActiveSupport::Concern
 
@@ -13,8 +15,8 @@ module AdapterTestHelpers
   end
 
   def setup_data
-    Post.create(:title => "First")
-    Post.create(:title => "Second")
+    Post.create(title: 'First')
+    Post.create(title: 'Second')
   end
 
   def clean_data
@@ -23,26 +25,26 @@ module AdapterTestHelpers
 
   def assert_timer(metric)
     assert adapter.timer?(metric),
-      "Expected the timer #{metric.inspect} to be included in #{adapter.timer_metric_names.inspect}, but it was not."
+           "Expected the timer #{metric.inspect} to be included in #{adapter.timer_metric_names.inspect}, but it was not."
   end
 
   def refute_timer(metric)
-    assert ! adapter.timer?(metric),
-      "Expected the timer #{metric.inspect} to not be included in #{adapter.timer_metric_names.inspect}, but it was."
+    assert !adapter.timer?(metric),
+           "Expected the timer #{metric.inspect} to not be included in #{adapter.timer_metric_names.inspect}, but it was."
   end
 
-  def assert_counter(metric, opts = { sample_rate: 1, tags: {}})
+  def assert_counter(metric, _opts = { sample_rate: 1, tags: {} })
     assert adapter.counter?(metric),
-      "Expected the counter #{metric.inspect} to be included in #{adapter.counter_metric_names.inspect}, but it was not."
+           "Expected the counter #{metric.inspect} to be included in #{adapter.counter_metric_names.inspect}, but it was not."
   end
 
   def refute_counter(metric)
     refute adapter.counter?(metric),
-      "Expected the counter #{metric.inspect} to not be included in #{adapter.counter_metric_names.inspect}, but it was."
+           "Expected the counter #{metric.inspect} to not be included in #{adapter.counter_metric_names.inspect}, but it was."
   end
 
   def assert_no_counter(metric)
-    assert ! adapter.counter?(metric),
-      "Expected the counter #{metric.inspect} to not be included in adapter.counter_metric_names.inspect}, but it was."
+    assert !adapter.counter?(metric),
+           "Expected the counter #{metric.inspect} to not be included in adapter.counter_metric_names.inspect}, but it was."
   end
 end

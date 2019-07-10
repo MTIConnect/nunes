@@ -1,30 +1,32 @@
 #!/usr/bin/env ruby
-#/ Usage: watch
-#/
-#/ Run the tests whenever any relevant files change.
-#/
+# frozen_string_literal: true
 
-require "pathname"
-require "rubygems"
-require "bundler"
+# / Usage: watch
+# /
+# / Run the tests whenever any relevant files change.
+# /
+
+require 'pathname'
+require 'rubygems'
+require 'bundler'
 Bundler.setup :watch
 
 # Put us where we belong, in the root dir of the project.
-Dir.chdir Pathname.new(__FILE__).realpath + "../.."
+Dir.chdir Pathname.new(__FILE__).realpath + '../..'
 
 # Run the tests to start.
-system "clear; script/test"
+system 'clear; script/test'
 
-require "rb-fsevent"
+require 'rb-fsevent'
 
-IgnoreRegex = /\/log|db/
+IgnoreRegex = %r{/log|db}.freeze
 
 fs = FSEvent.new
-fs.watch ["lib", "test"], latency: 1 do |args|
+fs.watch ['lib', 'test'], latency: 1 do |args|
   unless args.first =~ IgnoreRegex
-    system "clear"
+    system 'clear'
     puts "#{args.first} changed..."
-    system "script/test"
+    system 'script/test'
   end
 end
 fs.run

@@ -1,10 +1,12 @@
 #!/usr/bin/env rake
-$LOAD_PATH.push File.expand_path("../lib", __FILE__)
+# frozen_string_literal: true
 
-require "rake/testtask"
+$LOAD_PATH.push File.expand_path('lib', __dir__)
+
+require 'rake/testtask'
 Rake::TestTask.new do |t|
-  t.libs = ["lib", "test"]
-  t.test_files = FileList["test/**/*_test.rb"]
+  t.libs = %w[lib test]
+  t.test_files = FileList['test/**/*_test.rb']
 end
 
-task :default => :test
+task default: :test

@@ -1,17 +1,19 @@
-require "nunes/subscriber"
+# frozen_string_literal: true
+
+require 'nunes/subscriber'
 
 module Nunes
   module Subscribers
     class ActiveSupport < ::Nunes::Subscriber
       # Private
-      Pattern = /\.active_support\Z/
+      Pattern = /\.active_support\Z/.freeze
 
       # Private: The namespace for events to subscribe to.
       def self.pattern
         Pattern
       end
 
-      def cache_read(start, ending, transaction_id, payload)
+      def cache_read(start, ending, _transaction_id, payload)
         super_operation = payload[:super_operation]
         runtime = (ending - start) * 1_000
 
@@ -29,27 +31,27 @@ module Nunes
         end
       end
 
-      def cache_generate(start, ending, transaction_id, payload)
+      def cache_generate(start, ending, _transaction_id, _payload)
         runtime = (ending - start) * 1_000
         timing 'active_support.cache.fetch_generate.duration.milliseconds', runtime
       end
 
-      def cache_fetch_hit(start, ending, transaction_id, payload)
+      def cache_fetch_hit(start, ending, _transaction_id, _payload)
         runtime = (ending - start) * 1_000
         timing 'active_support.cache.fetch_hit.duration.milliseconds', runtime
       end
 
-      def cache_write(start, ending, transaction_id, payload)
+      def cache_write(start, ending, _transaction_id, _payload)
         runtime = (ending - start) * 1_000
         timing 'active_support.cache.write.duration.milliseconds', runtime
       end
 
-      def cache_delete(start, ending, transaction_id, payload)
+      def cache_delete(start, ending, _transaction_id, _payload)
         runtime = (ending - start) * 1_000
         timing 'active_support.cache.delete.duration.milliseconds', runtime
       end
 
-      def cache_exist?(start, ending, transaction_id, payload)
+      def cache_exist?(start, ending, _transaction_id, _payload)
         runtime = (ending - start) * 1_000
         timing 'active_support.cache.exist.duration.milliseconds', runtime
       end

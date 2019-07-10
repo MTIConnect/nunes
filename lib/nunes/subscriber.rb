@@ -1,12 +1,14 @@
-require "active_support/notifications"
+# frozen_string_literal: true
+
+require 'active_support/notifications'
 
 module Nunes
   class Subscriber
     # Private: The bang character that is the first char of some events.
-    BANG = "!".freeze
+    BANG = '!'
 
     # Private: The dot charactor used to determine the method name.
-    DOT = ".".freeze
+    DOT = '.'
 
     # Public: Setup a subscription for the subscriber using the
     # provided adapter.
@@ -18,7 +20,7 @@ module Nunes
     end
 
     def self.pattern
-      raise "Not Implemented, override in subclass and provide a regex or string."
+      raise 'Not Implemented, override in subclass and provide a regex or string.'
     end
 
     # Private: The adapter to send instrumentation to.
@@ -50,7 +52,7 @@ module Nunes
     # opts - Arbitrary options for client (adapter).
     #
     # Returns nothing.
-    def increment(stat, opts={})
+    def increment(stat, opts = {})
       @adapter.increment stat, opts
     end
 
@@ -61,7 +63,7 @@ module Nunes
     # opts - Arbitrary options for client (adapter).
     #
     # Returns nothing.
-    def timing(stat, msec, opts={})
+    def timing(stat, msec, opts = {})
       @adapter.timing stat, msec, opts
     end
   end

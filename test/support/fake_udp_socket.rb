@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 class FakeUdpSocket
   attr_reader :buffer
 
-  TimingRegex = /\:\d+\|ms\Z/
-  CounterRegex = /\:\d+\|c\Z/
+  TimingRegex = /\:\d+\|ms\Z/.freeze
+  CounterRegex = /\:\d+\|c\Z/.freeze
 
   def initialize
     @buffer = []
   end
 
-  def send(message, *rest)
+  def send(message, *_rest)
     @buffer.push message
   end
 

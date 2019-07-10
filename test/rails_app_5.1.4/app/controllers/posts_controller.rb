@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostsController < ApplicationController
   def index
     @posts = Post.all
@@ -17,6 +19,6 @@ class PostsController < ApplicationController
   end
 
   def some_boom
-    raise "boom!"
+    raise 'boom!'
   end
 end
