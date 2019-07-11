@@ -44,12 +44,12 @@ module Nunes
         increment 'action_controller.requests.total', tags: tags if tags[:status]
 
         if self.class.instrument_render_runtime && payload[:view_runtime]
-          render_runtime = payload[:view_runtime].round
+          render_runtime = payload[:view_runtime]
           timing 'action_controller.render.duration.milliseconds', render_runtime, tags: tags
         end
 
         if self.class.instrument_db_runtime && payload[:db_runtime]
-          db_runtime = payload[:db_runtime].round
+          db_runtime = payload[:db_runtime]
           timing 'action_controller.db.duration.milliseconds', db_runtime, tags: tags
         end
       end
