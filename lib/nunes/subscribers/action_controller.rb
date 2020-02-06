@@ -1,10 +1,12 @@
-require "nunes/subscriber"
+# frozen_string_literal: true
+
+require 'nunes/subscriber'
 
 module Nunes
   module Subscribers
     class ActionController < ::Nunes::Subscriber
       # Private
-      Pattern = /\.action_controller\Z/
+      Pattern = /\.action_controller\Z/.freeze
 
       # Private: The namespace for events to subscribe to.
       def self.pattern
@@ -12,72 +14,43 @@ module Nunes
       end
 
       class << self
-        attr_accessor :instrument_format
-        attr_accessor :instrument_view_runtime
+        attr_accessor :instrument_render_runtime
         attr_accessor :instrument_db_runtime
       end
 
-      # Public: Should we instrument the number of requests per format overall and per controller/action.
-      self.instrument_format = true
-
-      # Public: Should we instrument the view runtime overall and per controller/action.
-      self.instrument_view_runtime = true
+      # Public: Should we instrument the render runtime overall and per controller/action.
+      self.instrument_render_runtime = true
 
       # Public: Should we instrument the db runtime overall and per controller/action.
       self.instrument_db_runtime = true
 
-      def process_action(start, ending, transaction_id, payload)
-        runtime = ((ending - start) * 1_000).round
-        timing "action_controller.runtime.total", runtime
+      def process_action(start, ending, _transaction_id, payload)
+        runtime = (ending - start) * 1_000
 
-        status = payload[:status]
-        increment "action_controller.status.#{status}" if status
+        tags = payload[:tags] || {}
 
-        controller = ::Nunes.class_to_metric(payload[:controller])
-        action = payload[:action]
+        tags.merge!(
+          status: payload[:status],
+          controller: ::Nunes.class_to_metric(payload[:controller]),
+          action: payload[:action]
+        ).compact!
 
-        if controller && action
-          timing "action_controller.controller.#{controller}.#{action}.runtime.total", runtime
-          increment "action_controller.controller.#{controller}.#{action}.status.#{status}" if status
+        if tags[:status].nil? && payload[:exception].present?
+          exception_class_name = payload[:exception].first
+          tags[:status] = ActionDispatch::ExceptionWrapper.status_code_for_exception(exception_class_name)
         end
 
-        if self.class.instrument_view_runtime
-          view_runtime = payload[:view_runtime]
-          view_runtime = view_runtime.round if view_runtime
+        timing 'action_controller.request.duration.milliseconds', runtime, tags: tags
+        increment 'action_controller.requests.total', tags: tags if tags[:status]
 
-          if view_runtime
-            timing "action_controller.runtime.view", view_runtime
-
-            if controller && action
-              timing "action_controller.controller.#{controller}.#{action}.runtime.view", view_runtime
-            end
-          end
+        if self.class.instrument_render_runtime && payload[:view_runtime]
+          render_runtime = payload[:view_runtime]
+          timing 'action_controller.render.duration.milliseconds', render_runtime, tags: tags
         end
 
-        if self.class.instrument_db_runtime
+        if self.class.instrument_db_runtime && payload[:db_runtime]
           db_runtime = payload[:db_runtime]
-          db_runtime = db_runtime.round if db_runtime
-
-          if db_runtime
-            timing "action_controller.runtime.db", db_runtime
-
-            if controller && action
-              timing "action_controller.controller.#{controller}.#{action}.runtime.db", db_runtime
-            end
-          end
-        end
-
-        if self.class.instrument_format
-          format = payload[:format] || "all"
-          format = "all" if format == "*/*"
-
-          if format
-            increment "action_controller.format.#{format}"
-
-            if controller && action
-              increment "action_controller.controller.#{controller}.#{action}.format.#{format}"
-            end
-          end
+          timing 'action_controller.db.duration.milliseconds', db_runtime, tags: tags
         end
       end
 

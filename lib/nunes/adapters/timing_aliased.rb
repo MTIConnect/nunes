@@ -1,4 +1,6 @@
-require "nunes/adapter"
+# frozen_string_literal: true
+
+require 'nunes/adapter'
 
 module Nunes
   module Adapters
@@ -15,8 +17,8 @@ module Nunes
       end
 
       # Internal: Adapter timing to gauge.
-      def timing(metric, duration)
-        @client.gauge prepare(metric), duration
+      def timing(stat, msec, opts = {})
+        @client.gauge prepare(stat), msec, opts
       end
     end
   end

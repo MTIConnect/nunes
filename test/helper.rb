@@ -1,12 +1,14 @@
-ENV["RAILS_ENV"] = "test"
+# frozen_string_literal: true
 
-require "rails"
-require "rails/test_help"
-require "action_mailer"
+ENV['RAILS_ENV'] = 'test'
+
+require 'rails'
+require 'rails/test_help'
+require 'action_mailer'
 
 # require everything in the support directory
-root = Pathname(__FILE__).dirname.join("..").expand_path
-Dir[root.join("test/support/**/*.rb")].each { |f| require f }
+root = Pathname(__FILE__).dirname.join('..').expand_path
+Dir[root.join('test/support/**/*.rb')].each { |f| require f }
 
 puts "Running tests against rails version #{Rails.version}"
 
@@ -22,8 +24,8 @@ class ActiveSupport::TestCase
   include AdapterTestHelpers
 end
 
-rails_version = ENV["RAILS_VERSION"] || "4.2.5"
+rails_version = ENV['RAILS_VERSION'] || '4.2.5'
 
 require "rails_app_#{rails_version}/config/environment"
 
-require "nunes"
+require 'nunes'

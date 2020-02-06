@@ -1,4 +1,6 @@
-require "nunes/adapter"
+# frozen_string_literal: true
+
+require 'nunes/adapter'
 
 module Nunes
   module Adapters
@@ -14,12 +16,12 @@ module Nunes
         clear
       end
 
-      def increment(metric, value = 1)
-        counters << [prepare(metric), value]
+      def increment(stat, opts = {})
+        counters << [prepare(stat), opts]
       end
 
-      def timing(metric, value)
-        timers << [prepare(metric), value]
+      def timing(stat, msec, opts = {})
+        timers << [prepare(stat), msec, opts]
       end
 
       # Internal: Returns Array of any recorded timers with durations.
@@ -29,12 +31,15 @@ module Nunes
 
       # Internal: Returns Array of only recorded timers.
       def timer_metric_names
-        timers.map { |op| op.first }
+        timers.map(&:first)
       end
 
       # Internal: Returns true/false if metric has been recorded as a timer.
-      def timer?(metric)
-        timers.detect { |op| op.first == metric }
+      def timer?(metric, opts = {})
+        timers.detect do |op|
+          op.first == metric &&
+            op.last == opts
+        end
       end
 
       # Internal: Returns Array of any recorded counters with values.
@@ -44,12 +49,15 @@ module Nunes
 
       # Internal: Returns Array of only recorded counters.
       def counter_metric_names
-        counters.map { |op| op.first }
+        counters.map(&:first)
       end
 
       # Internal: Returns true/false if metric has been recorded as a counter.
-      def counter?(metric)
-        counters.detect { |op| op.first == metric }
+      def counter?(metric, opts = {})
+        counters.detect do |op|
+          op.first == metric &&
+            op.last == opts
+        end
       end
 
       # Internal: Empties the known counters and metrics.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/class/subclasses'
 
 module Nunes
@@ -8,14 +10,14 @@ module Nunes
     #
     # Returns Nunes::Adapter instance.
     def self.wrap(client)
-      raise ArgumentError, "client cannot be nil" if client.nil?
+      raise ArgumentError, 'client cannot be nil' if client.nil?
       return client if client.is_a?(self)
 
       adapter = adapters.detect { |adapter| adapter.wraps?(client) }
 
       if adapter.nil?
         raise ArgumentError,
-          "I have no clue how to wrap what you've given me (#{client.inspect})"
+              "I have no clue how to wrap what you've given me (#{client.inspect})"
       end
 
       adapter.new(client)
@@ -43,24 +45,24 @@ module Nunes
 
     # Internal: Increment a metric by a value. Override in subclass if client
     # interface does not match.
-    def increment(metric, value = 1)
-      @client.increment prepare(metric), value
+    def increment(stat, opts = {})
+      @client.increment prepare(stat), opts
     end
 
     # Internal: Record a metric's duration. Override in subclass if client
     # interface does not match.
-    def timing(metric, duration)
-      @client.timing prepare(metric), duration
+    def timing(stat, msec, opts = {})
+      @client.timing prepare(stat), msec, opts
     end
 
     # Private: What Ruby uses to separate namespaces.
-    ReplaceRegex = /[^a-z0-9\-_]+/i
+    ReplaceRegex = /[^a-z0-9\-_]+/i.freeze
 
     # Private: The default metric namespace separator.
-    Separator = ".".freeze
+    Separator = '.'
 
     # Private
-    Nothing = "".freeze
+    Nothing = ''
 
     # Private: Prepare a metric name before it is sent to the adapter's client.
     def prepare(metric, replacement = Separator)

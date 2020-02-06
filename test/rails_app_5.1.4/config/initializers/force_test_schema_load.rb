@@ -1,3 +1,3 @@
-if Rails.env.test?
-  load "#{Rails.root}/db/schema.rb"
-end
+# frozen_string_literal: true
+
+load "#{Rails.root}/db/schema.rb" if Rails.env.test?

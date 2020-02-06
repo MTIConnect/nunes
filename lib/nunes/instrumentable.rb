@@ -1,9 +1,11 @@
-require "active_support/notifications"
+# frozen_string_literal: true
+
+require 'active_support/notifications'
 
 module Nunes
   module Instrumentable
     # Private
-    MethodTimeEventName = "instrument_method_time.nunes".freeze
+    MethodTimeEventName = 'instrument_method_time.nunes'
 
     # Public: Instrument a method's timing by name.
     #
@@ -14,40 +16,40 @@ module Nunes
     #           :name - The String name of the event and namespace.
     def instrument_method_time(method_name, options_or_string = nil)
       options = options_or_string || {}
-      options = {name: options} if options.is_a?(String)
+      options = { name: options } if options.is_a?(String)
 
       action = :time
       payload = options.fetch(:payload) { {} }
       instrumenter = options.fetch(:instrumenter) { ActiveSupport::Notifications }
 
-      payload[:metric] = options.fetch(:name) {
+      payload[:metric] = options.fetch(:name) do
         if name.nil?
-          raise ArgumentError, "For class methods you must provide the full name of the metric."
+          raise ArgumentError, 'For class methods you must provide the full name of the metric.'
         else
           "#{::Nunes.class_to_metric(name)}.#{method_name}"
         end
-      }
+      end
 
       nunes_wrap_method(method_name, action) do |old_method_name, new_method_name|
         define_method(new_method_name) do |*args, &block|
-          instrumenter.instrument(MethodTimeEventName, payload) {
+          instrumenter.instrument(MethodTimeEventName, payload) do
             send(old_method_name, *args, &block)
-          }
+          end
         end
       end
     end
 
     # Private: And so horrendously ugly...
-    def nunes_wrap_method(method_name, action, &block)
+    def nunes_wrap_method(method_name, action)
       method_without_instrumentation = :"#{method_name}_without_#{action}"
       method_with_instrumentation = :"#{method_name}_with_#{action}"
 
       if method_defined?(method_without_instrumentation)
-        raise ArgumentError, "already instrumented #{method_name} for #{self.name}"
+        raise ArgumentError, "already instrumented #{method_name} for #{name}"
       end
 
       if !method_defined?(method_name) && !private_method_defined?(method_name)
-        raise ArgumentError, "could not find method #{method_name} for #{self.name}"
+        raise ArgumentError, "could not find method #{method_name} for #{name}"
       end
 
       alias_method method_without_instrumentation, method_name

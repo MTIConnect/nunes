@@ -1,4 +1,6 @@
-require "helper"
+# frozen_string_literal: true
+
+require 'helper'
 
 class MailerInstrumentationTest < ActionMailer::TestCase
   include ActiveJob::TestHelper
@@ -16,20 +18,21 @@ class MailerInstrumentationTest < ActionMailer::TestCase
     ActiveSupport::Notifications.unsubscribe @subscriber if @subscriber
   end
 
-  test "deliver_now" do
+  test 'deliver_now' do
     PostMailer.created.deliver_now
-    assert_timer "action_mailer.deliver.PostMailer"
+    assert_timer 'action_mailer.deliver.duration.milliseconds', tags: { mailer: 'post_mailer' }
   end
 
-  test "deliver_later" do
+  test 'deliver_later' do
     perform_enqueued_jobs do
       PostMailer.created.deliver_later
     end
-    assert_timer "action_mailer.deliver.PostMailer"
+    assert_timer 'action_mailer.deliver.duration.milliseconds', tags: { mailer: 'post_mailer' }
   end
 
-  test "receive" do
+  test 'receive' do
     PostMailer.receive PostMailer.created
-    assert_timer "action_mailer.receive.PostMailer"
+
+    assert_timer 'action_mailer.receive.duration.milliseconds', tags: { mailer: 'post_mailer' }
   end
 end

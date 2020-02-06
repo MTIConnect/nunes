@@ -1,4 +1,6 @@
-require "helper"
+# frozen_string_literal: true
+
+require 'helper'
 
 class ViewInstrumentationTest < ActionController::TestCase
   tests PostsController
@@ -14,17 +16,17 @@ class ViewInstrumentationTest < ActionController::TestCase
     ActiveSupport::Notifications.unsubscribe @subscriber if @subscriber
   end
 
-  test "render_template" do
+  test 'render_template' do
     get :index
 
     assert_response :success
-    assert_timer "action_view.template.app_views_posts_index_html_erb"
+    assert_timer 'action_view.render.duration.milliseconds', tags: { kind: 'template', path: 'app_views_posts_index_html_erb' }
   end
 
-  test "render_partial" do
+  test 'render_partial' do
     get :index
 
     assert_response :success
-    assert_timer "action_view.partial.app_views_posts_post_html_erb"
+    assert_timer 'action_view.render.duration.milliseconds', tags: { kind: 'partial', path: 'app_views_posts_post_html_erb' }
   end
 end

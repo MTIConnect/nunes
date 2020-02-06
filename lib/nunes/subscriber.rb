@@ -1,12 +1,14 @@
-require "active_support/notifications"
+# frozen_string_literal: true
+
+require 'active_support/notifications'
 
 module Nunes
   class Subscriber
     # Private: The bang character that is the first char of some events.
-    BANG = "!".freeze
+    BANG = '!'
 
     # Private: The dot charactor used to determine the method name.
-    DOT = ".".freeze
+    DOT = '.'
 
     # Public: Setup a subscription for the subscriber using the
     # provided adapter.
@@ -18,7 +20,7 @@ module Nunes
     end
 
     def self.pattern
-      raise "Not Implemented, override in subclass and provide a regex or string."
+      raise 'Not Implemented, override in subclass and provide a regex or string.'
     end
 
     # Private: The adapter to send instrumentation to.
@@ -46,22 +48,23 @@ module Nunes
 
     # Internal: Increment a metric for the client.
     #
-    # metric - The String name of the metric to increment.
-    # value - The Integer value to increment by.
+    # stat - The String name of the metric to increment.
+    # opts - Arbitrary options for client (adapter).
     #
     # Returns nothing.
-    def increment(metric, value = 1)
-      @adapter.increment metric, value
+    def increment(stat, opts = {})
+      @adapter.increment stat, opts
     end
 
     # Internal: Track the timing of a metric for the client.
     #
-    # metric - The String name of the metric.
-    # value - The Integer duration of the event in milliseconds.
+    # stat - The String name of the metric.
+    # msec - Milliseconds to record as a metric.
+    # opts - Arbitrary options for client (adapter).
     #
     # Returns nothing.
-    def timing(metric, value)
-      @adapter.timing metric, value
+    def timing(stat, msec, opts = {})
+      @adapter.timing stat, msec, opts
     end
   end
 end
